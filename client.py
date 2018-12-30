@@ -1,4 +1,4 @@
-import requests, argparse, time, sys, os
+import requests, argparse, time, sys, os, logging
 from daemonize import Daemonize
 
 def main():
@@ -50,7 +50,16 @@ def main():
         time.sleep(30)
 
 if __name__ == '__main__':
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+    fh = logging.FileHandler("/tmp/client.log", "w")
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
+    keep_fds = [fh.stream.fileno()]
+    
     myname=os.path.basename(sys.argv[0])
     pidfile='/tmp/%s' % myname       # any name
-    daemon = Daemonize(app=myname,pid=pidfile, action=main)
+    daemon = Daemonize(app=myname,pid=pidfile, action=main, keep_fds=keep_fds)
     daemon.start()
