@@ -9,13 +9,15 @@ fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 keep_fds = [fh.stream.fileno()]
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--rai_node_uri", help='rai_nodes uri, usually 127.0.0.1', default='127.0.0.1')
-    parser.add_argument("--rai_node_port", help='rai_node port, usually 7076', default='7076')
-    parser.add_argument("--api_key", help='api key, get from jaycox on discord')
+parser = argparse.ArgumentParser()
+parser.add_argument("--rai_node_uri", help='rai_nodes uri, usually 127.0.0.1', default='127.0.0.1')
+parser.add_argument("--rai_node_port", help='rai_node port, usually 7076', default='7076')
+parser.add_argument("--api_key", help='api key, get from jaycox on discord')
+parser.add_argument("--daemon", help='start as daemon', default = False)
 
-    args = parser.parse_args()
+args = parser.parse_args()
+
+def main():
 
     api_key = args.api_key
     logger.debug(api_key)
@@ -52,6 +54,8 @@ def main():
         try:
             r = requests.post('http://138.68.170.107:7092/callback/', json = payload)
             logger.debug(r.text)
+            if args.daemon == False:
+                print(r.text)
         except:
             pass
 
@@ -59,7 +63,10 @@ def main():
 
 if __name__ == '__main__':
     
-    myname=os.path.basename(sys.argv[0])
-    pidfile='/tmp/%s' % myname       # any name
-    daemon = Daemonize(app=myname,pid=pidfile, action=main, keep_fds=keep_fds)
-    daemon.start()
+    if args.daemon == True:
+        myname=os.path.basename(sys.argv[0])
+        pidfile='/tmp/%s' % myname       # any name
+        daemon = Daemonize(app=myname,pid=pidfile, action=main, keep_fds=keep_fds)
+        daemon.start()
+    else:
+        main()

@@ -8,6 +8,11 @@ import hashlib
 
 
 redis = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+from influxdb import InfluxDBClient
+influx_client = InfluxDBClient(host='localhost', port=8086)
+influx_client.switch_database('quorum_db')
+
+raw = 1000000000000000000000000000000
 
 from flask import Flask
 from flask import request
@@ -186,6 +191,12 @@ def post():
         redis.set(post_data['api_key'],data)
 
         hash_dest = hashlib.sha256(username.encode('utf-8')).hexdigest()[:8]
+
+        measurement = "peers_stake_total_{}".format(hash_dest)
+        json_body = [{"measurement" : measurement, "fields": {"value": int(post_data['peers_stake_total']) / raw}}]
+        print(json_body)
+        influx_client.write_points(json_body)
+
         return "Success: {}".format(hash_dest)
 
     else:
