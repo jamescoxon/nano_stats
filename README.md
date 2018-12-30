@@ -14,7 +14,7 @@
     ```
 3. 
     ```
-    $ pip3 install requests argparse
+    $ pip3 install requests argparse daemonize
     ```
 4. 
     ```
