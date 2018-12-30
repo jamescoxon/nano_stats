@@ -24,7 +24,7 @@ def get_data(json_request):
 
 while True:
     print("Grab Quorum Data")
-    json_request = '{"action" : "confirmation_quorum", "peer_details" : "True"}'
+    json_request = '{"action" : "confirmation_quorum", "peer_details" : 1}'
     r = get_data(json_request)
     if r == "Error":
         break
@@ -38,7 +38,7 @@ while True:
 #    print(peer_json)
 
     print("Send to server")
-    payload = {'api_key': api_key, 'online_stake_total' : resulting_data['online_stake_total'], 'peers_stake_total' : resulting_data['peers_stake_total'], 'quorum_delta' : resulting_data['quorum_delta'], 'peers' : peer_json}
+    payload = {'api_key': api_key, 'online_stake_total' : resulting_data['online_stake_total'], 'peers_stake_total' : resulting_data['peers_stake_total'], 'quorum_delta' : resulting_data['quorum_delta'], 'peers' : peer_json, 'rebroadcast_peers' : resulting_data['peers']}
     try:
         r = requests.post('http://138.68.170.107:7092/callback/', json = payload)
         print(r.text)

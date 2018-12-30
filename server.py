@@ -13,9 +13,6 @@ from flask import Flask
 from flask import request
 app = Flask(__name__)
 
-def find_node(gr, att, val):
-    return any([node for node in G.nodes(data=True) if node[1][att] == val])
-
 @app.route("/web/")
 def get():
     redis_data = str(redis.get("api_key_list"))
@@ -116,7 +113,8 @@ def post():
             print(result)
         else:
             print("Nothing to update")
-
+        if 'rebroadcast_peers' in post_data:
+            print("Weight: {}".format(post_data['rebroadcast_peers']))
         peers_list = post_data['peers']
         for peers in peers_list['peers']:
 #            print(peers)
